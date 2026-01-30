@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vamshi's AI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        #chat-box {
+            background: white;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        input {
+            padding: 10px;
+            width: 70%;
+        }
+        button {
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Vamshi's AI Chatbot</h2>
+
+<div id="chat-box"></div>
+
+<input type="text" id="message" placeholder="Type your message..." />
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById("message");
+        const chatBox = document.getElementById("chat-box");
+        const userMessage = input.value;
+
+        if (!userMessage) return;
+
+        chatBox.innerHTML += `<p><b>You:</b> ${userMessage}</p>`;
+        input.value = "";
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/chat/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    conversation_id: "frontend-demo"
+                })
+            });
+
+            const data = await response.json();
+
+            // ✅ FIX IS HERE
+            chatBox.innerHTML += `<p><b>Bot:</b> ${data.response}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        } catch (error) {
+            chatBox.innerHTML += `<p><b>Error:</b> Backend not reachable</p>`;
+        }
+    }
+</script>
+
+</body>
+</html>
